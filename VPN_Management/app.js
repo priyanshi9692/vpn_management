@@ -6,7 +6,7 @@ var logger = require('morgan');
 
 var indexRouter = require('./routes/index');
 var usersRouter = require('./routes/users');
-
+var signupRouter=require('./routes/signup');
 var app = express();
 
 // view engine setup
@@ -17,11 +17,17 @@ app.use(logger('dev'));
 app.use(express.json());
 app.use(express.urlencoded({ extended: false }));
 app.use(cookieParser());
+var session = require('client-sessions');
 app.use(express.static(path.join(__dirname, 'public')));
-
+app.use(session({
+  cookieName: 'session',
+  secret: 'random_string_goes_here',
+  duration: 30 * 60 * 1000,
+  activeDuration: 5 * 60 * 1000,
+}));
 app.use('/', indexRouter);
 app.use('/users', usersRouter);
-
+app.use('/', signupRouter);
 const port= 9000;
 
 // catch 404 and forward to error handler
