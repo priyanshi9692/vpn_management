@@ -88,11 +88,11 @@
     <div class="form-style-8">
       <h2 style="color:white;">Quick Details </h2>
       <form method="post" action="signup">
-        <input type="email" name="email" placeholder="Email" />
-        <input type="text" name="fullname" placeholder="Full Name" />
-        <input type="number" name="ssn" placeholder="SSN" />
-        <input type="text" name="address" placeholder="Address" />
-		<input type="text" name="credit" placeholder="Credit Card Number" />
+        <input type="email" name="email" placeholder="Email" id="email" required/>
+        <input type="text" name="fullname" placeholder="Full Name" id="fullname" required/>
+        <input type="number" name="ssn" placeholder="SSN" id="ssn" required/>
+        <input type="text" name="address" placeholder="Address" id="address" required/>
+		<input type="text" name="credit" placeholder="Credit Card Number" id="credit"required/>
 		<div class="form-group" >
 			<label class="form">Expiration Date</label>
 			<select name="month" id="month">
@@ -123,7 +123,7 @@
 				<option value="2026"> 2026</option>
 			</select>
 		</div>
-		<input type="submit" value="Sign Up" /> 
+		<input type="submit" onclick="singupInfo()" value="Sign Up" /> 
       </form>
     </div>
     <script type="text/javascript">
@@ -131,7 +131,31 @@
       function adjust_textarea(h) {
           h.style.height = "20px";
           h.style.height = (h.scrollHeight)+"px";
-      }
+	  }
+	  function signupInfo(){
+		  var login={};
+       login.fullname= document.getElementById("fullname").value;
+	   login.email = document.getElementById("email").value;
+	   login.address = document.getElementById("address").value;
+	   login.ssn = document.getElementById("ssn").value;
+	   login.month = document.getElementById("month").value;
+	   login.year = document.getElementById("year").value;
+	   login.credit = document.getElementById("credit").value;
+    
+   console.log(ssn);
+    $.ajax({url: "signup",
+    type: "POST",
+    data:login,
+    success: function(result){
+        if(result=="success"){
+			alert("Successfully registered. You will be redirected to the dashboard.");
+            window.location.href = 'home';
+        } else{
+        alert("Email or SSN is already present in our system");
+        }
+    }
+});
+    }
       </script>
   </body>
   

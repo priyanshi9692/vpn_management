@@ -16,7 +16,6 @@ router.post('/signup', function (req, res, next) {
   plan.membership_id =  Math.floor(100000 + Math.random() * 900000);
   plan.start_date = d;
   plan.end_date = c;
-
   var newCustomer = {};
   var cardInfo = {};
   newCustomer.email = req.body.email;
@@ -62,7 +61,8 @@ router.post('/signup', function (req, res, next) {
 
           con.query(sql, newCustomer, function (err, result) {
             console.log(sql);
-            if (err) throw err;
+            if (err) 
+            return res.send("Email or SSN is already present in our system. Please try again.");
             else {
               console.log("New user Data inserted successfully");
               con2.connect(function (err) {
@@ -76,13 +76,7 @@ router.post('/signup', function (req, res, next) {
                   client.ssn=newCustomer.ssn;
                   console.log(client);
                   req.session.user = client;
-                  res.render("user_home",{
-                    name: req.session.user.name,
-                    email:req.session.user.email,
-                    image:req.session.user.image,
-                    ssn:req.session.user.ssn,
-                    id:req.session.user.id,
-                  });
+                  return res.redirect("home");
                 });
               });
             }
