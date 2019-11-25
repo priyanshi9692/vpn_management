@@ -35,6 +35,7 @@
 .form-style-8 input[type="search"],
 .form-style-8 input[type="time"],
 .form-style-8 input[type="url"],
+.form-style-8 input[type="month"],
 .form-style-8 input[type="password"],
 .form-style-8 textarea,
 .form-style-8 select 
@@ -88,14 +89,41 @@
       <h2 style="color:white;">Quick Details </h2>
       <form method="post" action="signup">
         <input type="email" name="email" placeholder="Email" />
-        <input type="password" name="password" placeholder="Password" />
-        <input type="text" name="first" placeholder="First Name" />
-        <input type="text" name="last" placeholder="Last Name" />
-        <input type="text" name="ssn" placeholder="SSN" />
+        <input type="text" name="fullname" placeholder="Full Name" />
+        <input type="number" name="ssn" placeholder="SSN" />
         <input type="text" name="address" placeholder="Address" />
-        <input type="text" name="credit" placeholder="Credit Card Number" />
-        <input type="submit" value="Sign Up" /> 
-
+		<input type="text" name="credit" placeholder="Credit Card Number" />
+		<div class="form-group" >
+			<label class="form">Expiration Date</label>
+			<select name="month" id="month">
+				<option value="01">January</option>
+				<option value="02">February </option>
+				<option value="03">March</option>
+				<option value="04">April</option>
+				<option value="05">May</option>
+				<option value="06">June</option>
+				<option value="07">July</option>
+				<option value="08">August</option>
+				<option value="09">September</option>
+				<option value="10">October</option>
+				<option value="11">November</option>
+				<option value="12">December</option>
+			</select>
+			<select  name="year" id="year">
+				<option value="2016"> 2016</option>
+				<option value="2017"> 2017</option>
+				<option value="2018"> 2018</option>
+				<option value="2019"> 2019</option>
+				<option value="2020"> 2020</option>
+				<option value="2021"> 2021</option>
+				<option value="2022"> 2022</option>
+				<option value="2023"> 2023</option>
+				<option value="2024"> 2024</option>
+				<option value="2025"> 2025</option>
+				<option value="2026"> 2026</option>
+			</select>
+		</div>
+		<input type="submit" value="Sign Up" /> 
       </form>
     </div>
     <script type="text/javascript">
