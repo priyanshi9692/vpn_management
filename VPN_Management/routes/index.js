@@ -163,7 +163,7 @@ router.get('/plans', function(req, res, next) {
         if (err) throw err;
         else{
           console.log("Successfully Updated!");
-          res.redirect("http://localhost:9000/manage");
+          res.redirect("manage");
         }
       })
     })
