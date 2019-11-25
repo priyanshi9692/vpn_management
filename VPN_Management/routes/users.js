@@ -43,12 +43,7 @@ router.post('/add-device', function (req, res, next) {
               console.log("New CUSTOMER_DEVICE Data inserted successfully");
 
 
-              res.render('user_home', {
-                name: req.session.user.name,
-                email: req.session.user.email,
-                image: req.session.user.image,
-
-              });
+              res.redirect("home");
             }
           })
         })

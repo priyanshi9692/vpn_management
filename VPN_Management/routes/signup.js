@@ -73,12 +73,15 @@ router.post('/signup', function (req, res, next) {
                   client.email=  newCustomer.email;
                   client.image="images/"+newCustomer.full_name+".jpg";
                   client.id=  newCustomer.membership_id;
+                  client.ssn=newCustomer.ssn;
                   console.log(client);
                   req.session.user = client;
                   res.render("user_home",{
-                    name: client.fullname,
-                    image: client.image,
-                    email:req.session.user.email
+                    name: req.session.user.name,
+                    email:req.session.user.email,
+                    image:req.session.user.image,
+                    ssn:req.session.user.ssn,
+                    id:req.session.user.id,
                   });
                 });
               });
