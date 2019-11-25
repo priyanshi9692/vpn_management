@@ -26,7 +26,7 @@ app.use(session({
   activeDuration: 5 * 60 * 1000,
 }));
 app.use('/', indexRouter);
-app.use('/users', usersRouter);
+app.use('/', usersRouter);
 app.use('/', signupRouter);
 const port= 9000;
 
