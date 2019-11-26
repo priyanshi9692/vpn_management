@@ -165,8 +165,107 @@ router.delete('/disconnect-switch', function (req, res, next) {
 
 });
 
+router.get('/list-admin', function (req, res, next) {
+  var con = mysql.createConnection(database);
+  con.connect(function (err) {
+    if (err) throw err;
+    console.log(req.query);
+    console.log(database);
+    //var sql = "select A.device_ID, switch_ID from CONNECT A join DEVICE_OWNER B on A.device_ID = B.device_ID join USER C on C.ssn = B.ssn where C.ssn=" + req.session.user.ssn.toString();
+    var sql = "select * from REGULAR_EMPLOYEE";
+    //console.log(sql);
+      var info = {
+      "data": []
+    };
+    //console.log(sql)
+    con.query(sql, function (err, result) {
+      //console.log(result);
+      if (err) {throw err;}
+      else {
+        //console.log(result);
+        info.data = result;
+        res.send(info);
+        con.end();
+      }
+    });
+  });
+});
 
+router.get('/admin-server', function (req, res, next) {
+  var con = mysql.createConnection(database);
+  con.connect(function (err) {
+    if (err) throw err;
+    //console.log(req.query);
+    //console.log(database);
+    //var sql = "select A.device_ID, switch_ID from CONNECT A join DEVICE_OWNER B on A.device_ID = B.device_ID join USER C on C.ssn = B.ssn where C.ssn=" + req.session.user.ssn.toString();
+    var sql = "select * from VPN_SERVER";
+    //console.log(sql);
+      var info = {
+      "data": []
+    };
+    //console.log(sql)
+    con.query(sql, function (err, result) {
+      //console.log(result);
+      if (err) {throw err;}
+      else {
+        //console.log(result);
+        info.data = result;
+        res.send(info);
+        con.end();
+      }
+    });
+  });
+});
 
+router.get('/admin-con-device', function (req, res, next) {
+  var con = mysql.createConnection(database);
+  con.connect(function (err) {
+    if (err) throw err;
+    console.log(req.query);
+    console.log(database);
+    var sql = "SELECT full_name, private_IP_Address, device_name from CONNECT JOIN CUSTOMER_DEVICE JOIN DEVICE_OWNER JOIN USER WHERE CONNECT.device_ID = CUSTOMER_DEVICE.device_ID AND CONNECT.device_ID = DEVICE_OWNER.device_ID AND USER.ssn = DEVICE_OWNER.ssn";
+    console.log(sql);
+      var info = {
+      "data": []
+    };
+    console.log(sql)
+    con.query(sql, function (err, result) {
+      console.log(result);
+      if (err) {throw err;}
+      else {
+        console.log(result);
+        info.data = result;
+        res.send(info);
+        con.end();
+      }
+    });
+  });
+});
+
+router.get('/admin-members', function (req, res, next) {
+  var con = mysql.createConnection(database);
+  con.connect(function (err) {
+    if (err) throw err;
+    //console.log(req.query);
+    //console.log(database);
+    var sql = "select USER.full_name as full_name, USER.membership_ID as membership_ID, USER.email as email,  PLAN.license_no as license_no, PLAN.start_date as start_date, PLAN.end_date as end_date from USER join PLAN ON USER.membership_ID = PLAN.membership_id";
+    //console.log(sql);
+      var info = {
+      "data": []
+    };
+    //console.log(sql)
+    con.query(sql, function (err, result) {
+      //console.log(result);
+      if (err) {throw err;}
+      else {
+        //console.log(result);
+        info.data = result;
+        res.send(info);
+        con.end();
+      }
+    });
+  });
+});
 
 
 module.exports = router;
