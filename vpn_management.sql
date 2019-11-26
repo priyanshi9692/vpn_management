@@ -1,0 +1,170 @@
+
+-- SJSU CMPE 138/180 Fall 2019 TEAM7
+drop database if exists vpn_management;
+
+CREATE DATABASE vpn_management;
+
+-- create table for USER
+-- need ` to escape USER keyword 
+
+
+CREATE TABLE `USER`
+(SSN  CHAR(9) NOT NULL,
+email CHAR(40) NOT NULL,
+full_name CHAR(60) NOT NULL,
+card_info CHAR(16) NOT NULL,
+address CHAR(150) NOT NULL,
+membership_ID int(8),
+UNIQUE(card_info),
+PRIMARY KEY(SSN));
+
+-- create table for CARD_INFO
+CREATE TABLE CARD_INFO
+(card_no CHAR(16) NOT NULL,
+expiration_date DATE NOT NULL,
+PRIMARY KEY(card_no),
+FOREIGN KEY(card_no) REFERENCES USER(card_info) ON DELETE CASCADE ON UPDATE CASCADE);
+
+
+-- create table for SERVER_ADMIN
+CREATE TABLE SERVER_ADMIN
+(SSN CHAR(9) NOT NULL,
+emp_id CHAR(10) NOT NULL,
+full_name CHAR(60) NOT NULL,
+PRIMARY KEY(SSN));
+
+-- create table for REGULAR_EMPLOYEE
+CREATE TABLE REGULAR_EMPLOYEE 
+(full_name CHAR(60) NOT NULL,
+emp_id CHAR(10) NOT NULL,
+SSN CHAR(9) NOT NULL,
+supervisor_ssn CHAR(9) NOT NULL,
+PRIMARY KEY(SSN));
+
+-- create table for VPN_SERVER
+-- dropped server_empID colum, since emp_ID is not a primary key anymore, from VPN_SERVER table
+CREATE TABLE VPN_SERVER
+(server_ID CHAR(10) NOT NULL,
+`status` CHAR(15) NOT NULL,
+server_ssn CHAR(9) NOT NULL,
+PRIMARY KEY(server_ID));
+
+
+-- create table for VPN_SERVER_SWITCH
+CREATE TABLE VPN_SERVER_SWITCH
+(switch_ID CHAR(10) NOT NULL,
+max_hosts INT(4) NOT NULL,
+PRIMARY KEY(switch_ID));
+
+
+-- create table for PLAN
+CREATE TABLE PLAN
+(membership_id int(8) NOT NULL AUTO_INCREMENT,
+license_no INT(10) NOT NULL,
+start_date DATE NOT NULL,
+end_date DATE NOT NULL,
+PRIMARY KEY(membership_id));
+
+ALTER TABLE PLAN AUTO_INCREMENT=10000000;
+
+-- create table for CONNECT
+CREATE TABLE CONNECT 
+(device_ID CHAR(10) NOT NULL,
+switch_ID CHAR(10) NOT NULL,
+PRIMARY KEY(device_ID, switch_ID));
+
+-- create table for BACKBONE_CONNECTION
+CREATE TABLE BACKBONE_CONNECTION
+(switch_ID CHAR(10) NOT NULL,
+server_ID CHAR(10) NOT NULL,
+PRIMARY KEY(switch_ID, server_ID));
+
+-- create table for MONITOR
+CREATE TABLE MONITOR 
+(server_ID CHAR(10) NOT NULL,
+ssn CHAR(9) NOT NULL,
+PRIMARY KEY(server_ID, ssn));
+
+-- create table for CUSTOMER_DEVICE
+-- ip address is in the following format: 192.168.124.111, so max chars are 15 including the dots.
+CREATE TABLE CUSTOMER_DEVICE
+(device_ID CHAR(10) NOT NULL,
+private_IP_Address CHAR(15) NOT NULL,
+device_name CHAR(30),
+PRIMARY KEY(device_ID));
+
+-- creat table for DEVICE_OWNER
+CREATE TABLE DEVICE_OWNER
+(device_ID CHAR(10) NOT NULL,
+ssn CHAR(9) NOT NULL,
+membership_id int(8) NOT NULL,
+PRIMARY KEY(device_ID));
+
+-- create table for VPN_SERVER_PROTOCOL
+CREATE TABLE VPN_SERVER_PROTOCOL
+(server_id CHAR(10) NOT NULL,
+protocol CHAR(10) NOT NULL,
+PRIMARY KEY(server_id, protocol));
+
+
+-- create table for VPN_SERVER_LOCATIONS
+CREATE TABLE VPN_SERVER_LOCATION
+(server_id CHAR(10) NOT NULL,
+location CHAR(20) NOT NULL,
+PRIMARY KEY(server_id, location));
+
+
+-- ######################################--
+-- now that all tables are created, need to add foregin keys -- 
+
+-- FOREIGN KEYS for USER
+ALTER TABLE `USER`
+ADD FOREIGN KEY(membership_ID) REFERENCES PLAN (membership_id);
+
+-- FOREIGN KEYS for REGULAR EMPLOYEE
+ALTER TABLE REGULAR_EMPLOYEE
+ADD FOREIGN KEY(supervisor_ssn) REFERENCES SERVER_ADMIN(ssn);
+
+-- FOREIGN KEYS for VPN_SERVER
+ALTER TABLE VPN_SERVER
+ADD FOREIGN KEY(server_ssn) REFERENCES SERVER_ADMIN(ssn);
+
+-- FOREIGN KEYS for CONNECT
+ALTER TABLE CONNECT
+ADD FOREIGN KEY(switch_ID) REFERENCES VPN_SERVER_SWITCH(switch_ID);
+
+ALTER TABLE CONNECT
+ADD FOREIGN KEY(device_ID) REFERENCES CUSTOMER_DEVICE(device_ID);
+
+-- FOREIGN KEYS for BACKBONE_CONNECTION
+ALTER TABLE BACKBONE_CONNECTION
+ADD FOREIGN KEY(switch_ID) REFERENCES VPN_SERVER_SWITCH(switch_ID);
+
+ALTER TABLE BACKBONE_CONNECTION
+ADD FOREIGN KEY(server_ID) REFERENCES VPN_SERVER(server_ID);
+
+-- FOREIGN KEYS for MONITOR
+ALTER TABLE MONITOR
+ADD FOREIGN KEY(server_ID) REFERENCES VPN_SERVER(server_ID);
+
+ALTER TABLE MONITOR
+ADD FOREIGN KEY(ssn) REFERENCES REGULAR_EMPLOYEE(supervisor_ssn);
+
+-- FOREIGN KEY for DEVICE_OWNER
+ALTER TABLE DEVICE_OWNER
+ADD FOREIGN KEY(device_ID) REFERENCES CUSTOMER_DEVICE(device_ID) ON DELETE CASCADE;
+
+ALTER TABLE DEVICE_OWNER
+ADD FOREIGN KEY(ssn) REFERENCES USER(SSN);
+
+ALTER TABLE DEVICE_OWNER
+ADD FOREIGN KEY(membership_id) REFERENCES PLAN(membership_id);
+
+-- FOREIGN KEY for VPN_SERVER_PROTOCOL
+ALTER TABLE VPN_SERVER_PROTOCOL
+ADD FOREIGN KEY(server_id) REFERENCES VPN_SERVER(server_ID);
+
+-- FOREIGN KEY for VPN_SERVER_LOCATION
+ALTER TABLE VPN_SERVER_LOCATION
+ADD FOREIGN KEY(server_id) REFERENCES VPN_SERVER(server_ID);
+
