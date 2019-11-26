@@ -178,9 +178,10 @@
                 <div class="form-style-8">
                   <h2 style="color:white;">Add Device </h2>
                   <form method="post" action="add-device">
-                    <input type="text" name="devicename" placeholder="Device Name" />
-                    <input type="text" name="ip" placeholder="IP Address" />
-                    <input type="submit" value="Add" /> 
+                    <input type="text" name="devicename" placeholder="Device Name" required/>
+                    <input type="text" name="ip" placeholder="IP Address" required/>
+                    <input type="submit" id="submit1" value="Add" /> 
+                    <div style="color:red" id="showmessage"></div>
                   </form>
                 </div>
 
@@ -235,7 +236,14 @@
 
 
     $(document).ready(function() {
- 
+      $.getJSON('/getdevices', function (data) {
+        console.log(data.data.length);
+        if(data.data.length>=5){
+          $('#showmessage').text("Max of 5 devices can be added. If you want to add more device please delete already existing device");
+          $('#submit1').prop("disabled",true).css('opacity',0.5);
+
+        }
+});
     });
     </script>
 
