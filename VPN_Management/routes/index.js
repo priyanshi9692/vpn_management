@@ -74,6 +74,19 @@ router.get('/home', function(req, res, next) {
 }
 
 });
+// Admin Home
+router.get('/admin_home', function(req, res, next) {
+  if (req.session && req.session.user) {
+  res.render('admin_home', { name: req.session.user.name,
+  email:req.session.user.email,
+  image:req.session.user.image,
+  ssn:req.session.user.ssn,
+  id:req.session.user.id,
+  });
+} else {
+  res.render('index', { title: 'VPN Management System' });
+}
+});
 
 router.get('/plans', function(req, res, next) {
   if (req.session && req.session.user) {
