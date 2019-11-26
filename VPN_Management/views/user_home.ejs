@@ -18,7 +18,21 @@
   <!-- Custom styles for this template-->
   <link href="css/sb-admin-2.min.css" rel="stylesheet">
   <style type="text/css">
-
+.button-2{
+  -moz-box-shadow: inset 0px 1px 0px 0px #45D6D6;
+        -webkit-box-shadow: inset 0px 1px 0px 0px #45D6D6;
+        box-shadow: inset 0px 1px 0px 0px #45D6D6;
+        background-color: #2CBBBB;
+        border: 1px solid #27A0A0;
+        display: inline-block;
+        cursor: pointer;
+        color: #FFFFFF;
+        font-family: 'Open Sans Condensed', sans-serif;
+        font-size: 14px;
+        padding: 8px 18px;
+        text-decoration: none;
+        text-transform: uppercase;
+}
     .form-style-8{
         font-family: 'Open Sans Condensed', arial, sans;
         width: 500px;
@@ -228,6 +242,7 @@ List of All Devices
                         <tr>
                             <th>Device Name</th>
                             <th>IP Address</th>
+                            <th>Action</th>
                         </tr>
                     </thead>
                     </table>
@@ -286,23 +301,63 @@ List of All Devices
   <!-- Custom scripts for all pages-->
   <script src="js/sb-admin-2.min.js"></script>
 
-  <!-- Page level plugins -->
-  <script src="vendor/chart.js/Chart.min.js"></script>
+
 
   <!-- Page level custom scripts -->
-  <script src="js/demo/chart-area-demo.js"></script>
-  <script src="js/demo/chart-pie-demo.js"></script>
   <script src="https://cdn.datatables.net/1.10.20/js/jquery.dataTables.min.js" type="text/javascript"></script>
   <script type="text/javascript">
     //auto expand textarea
+    var connectDeviceTable;
     function adjust_textarea(h) {
         h.style.height = "20px";
         h.style.height = (h.scrollHeight)+"px";
     }
 
+    $('#devices-table').on('click', 'tbody tr td:nth-last-child(1)', function (e) {
+      var now = this;
+      var d =  connectDeviceTable.row(this).data();
+      console.log(d);
+      if(d.isConnected==false){
+        $.ajax({url: "connect-switch",
+    type: "POST",
+    data:d,
+    success: function(result){
+        if(result){
+			alert("Successfully connected.");
+            window.location.href = 'home';
+        } else{
+		alert("some error occured");
+		window.location.href='home';
+        }
+    }
+})
+}else{
+  $.ajax({
+    url: '/disconnect-switch',
+    method: 'DELETE',
+    data:d,
+  
+    success: function(result) {
+       if(result == "success"){
+         alert("Successfully Disconnected:" + d.device_name); 
+         window.location.href = "home";
+       }
+       else {
+         alert("Some error occured");
+       }
+    },
+    error: function(request,msg,error) {
+  
+    }
+  })
+}
 
-    $(document).ready(function() {
-    $('#devices-table').dataTable( {
+   
+
+    })
+ 
+  $(document).ready(function() {
+    connectDeviceTable=$('#devices-table').DataTable( {
   "ajax": {
     "url": "list-devices",
     "type": "GET"
@@ -310,9 +365,22 @@ List of All Devices
   "columns": [
             { "data": "device_name" },
             { "data": "private_IP_Address" },
+            { "data": "device_ID",
+            "render": function (data, type, row) {
+              console.log(row.isConnected);
+              if(row.isConnected==false){
+                return "<button type='button' class='button-2'>CONNECT</button> ";
+              }
+              else {
+                return "<button type='button' class='button-2' style='background-color:red'>DISCONNECT</button> ";
+              }
+            }
+          }
         ]
     });
     });
+
+
     </script>
 
 </body>

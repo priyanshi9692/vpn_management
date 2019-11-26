@@ -95,8 +95,6 @@ router.get('/plans', function(req, res, next) {
     var con = mysql.createConnection(database);
     con.connect(function(err) {
       if (err) throw err;
-      console.log(req.query);
-      console.log(database);
       var sql = "Select * from  vpn_management.USER;";
       con.query(sql,function(err,result){
         if (err) throw err;
@@ -114,32 +112,37 @@ router.get('/plans', function(req, res, next) {
                   client.image="images/"+client.full_name+".jpg";
                   console.log(client);
                   req.session.user = client;
+                  con.end();
                return res.send("success");
+
                 } 
             }
+            con.end();
             return res.send("Password/Username is incorrect. Please Try again.");
         }
       })
     });
+
   });
   router.get('/membership-info', function(req, res, next) {
     var con = mysql.createConnection(database);
     con.connect(function(err) {
       if (err) throw err;
-      console.log(req.query);
-      console.log(database);
       var sql = "SELECT * FROM PLAN p JOIN USER u ON p.membership_id= u.membership_id WHERE p.membership_id="+req.session.user.id+";";
       con.query(sql,function(err,result){
         if (err) throw err;
         else {
-            
+          
     if(result.length>0){
       var info=result[0];
       res.send(info);
+      con.end();
     }
   }
 })
     })
+
+
     
   });
   router.post('/membership-info', function (req, res, next) {
@@ -163,18 +166,20 @@ router.get('/plans', function(req, res, next) {
         if (err) throw err;
         else{
           console.log("Successfully Updated!");
+          req.session.user.name= info.fullname;
+          req.session.user.email=info.email;
           res.redirect("manage");
+          con.end();
         }
       })
     })
+
   });
 
   router.get('/getdevices', function (req, res, next) {
     var con = mysql.createConnection(database);
     con.connect(function (err) {
       if (err) throw err;
-      console.log(req.query);
-      console.log(database);
       var sql = "select c.device_ID, c.device_name from CUSTOMER_DEVICE c JOIN DEVICE_OWNER d ON c.device_ID = d.device_id where d.membership_id=" + req.session.user.id;
       var info = {
         "data": []
@@ -185,9 +190,11 @@ router.get('/plans', function(req, res, next) {
           console.log(result);
           info.data = result;
           res.send(info);
+          con.end();
         }
       });
     });
+
   });
 
   router.delete('/delete', function (req, res, next) {
@@ -195,8 +202,6 @@ router.get('/plans', function(req, res, next) {
     var con = mysql.createConnection(database);
     con.connect(function (err) {
       if (err) throw err;
-      console.log(req.query);
-      console.log(database);
       var sql = "DELETE FROM CUSTOMER_DEVICE WHERE device_ID='"+ req.body.device + "';";
       var info = {
         "data": []
@@ -210,9 +215,11 @@ router.get('/plans', function(req, res, next) {
           console.log(result);
           info.data = result;
           res.send("success");
+          con.end();
         }
       });
     });
+
   });
   
 

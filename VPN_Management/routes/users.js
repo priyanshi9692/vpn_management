@@ -41,9 +41,9 @@ router.post('/add-device', function (req, res, next) {
 
             else {
               console.log("New CUSTOMER_DEVICE Data inserted successfully");
-
-
-              res.redirect("home");
+          res.redirect("home");
+              con2.end();
+              con.end();
             }
           })
         })
@@ -57,22 +57,114 @@ router.get('/list-devices', function (req, res, next) {
   var con = mysql.createConnection(database);
   con.connect(function (err) {
     if (err) throw err;
-    console.log(req.query);
-    console.log(database);
-    var sql = "select device_name, private_IP_Address from CUSTOMER_DEVICE c JOIN DEVICE_OWNER d ON c.device_id = d.device_id where d.membership_id=" + req.session.user.id;
+    var sql = "select c.device_name, c.private_IP_Address, c.device_ID from CUSTOMER_DEVICE c JOIN DEVICE_OWNER d ON c.device_id = d.device_id where d.membership_id=" + req.session.user.id+";SELECT * FROM CONNECT;";
     var info = {
       "data": []
     };
+
     con.query(sql, function (err, result) {
       if (err) throw err;
       else {
-        console.log(result);
-        info.data = result;
+        // info.data = result[0];
+        var connectedDevices=[];
+
+        for(var j=0; j<result[1].length; j++){
+        connectedDevices.push(result[1][j].device_ID);  
+        }
+        for(var i=0; i<result[0].length; i++){
+          
+          var object={};
+            object.device_name=result[0][i].device_name;
+          object.device_ID=result[0][i].device_ID;
+                object.private_IP_Address=result[0][i].private_IP_Address;
+              if(connectedDevices.includes(result[0][i].device_ID)){  
+                object.isConnected=true;
+              }
+          else{
+            object.isConnected=false;
+          }
+          info.data.push(object);
+        }
         res.send(info);
+        con.end();
       }
     });
   });
 });
+
+router.post('/connect-switch', function (req, res, next) {
+  console.log(req.body, "my name is priyanshi");
+
+  var device = {};
+  
+  device.device_ID = req.body.device_ID;
+
+
+  var con = mysql.createConnection(database);
+  var con1 = mysql.createConnection(database);
+  con.connect(function (err) {
+    if (err) throw err;
+    console.log("Connected to DB!");
+    var sql = "SELECT * FROM VPN_SERVER_SWITCH LIMIT 1 ;";
+    var sql1 = "INSERT INTO CONNECT SET ?";
+
+    con.query(sql, function (err, result) {
+      if (err) throw err;
+
+      else {
+        var switch_obj={};
+        switch_obj.switch_ID=result[0].switch_ID;
+        switch_obj.device_ID=req.body.device_ID;
+        console.log(switch_obj);
+        con1.connect(function (err) {
+          if (err) throw err;
+          console.log("Connected to DB!");
+
+          con1.query(sql1, switch_obj, function (err, result) {
+            if (err) throw err;
+
+            else {
+              console.log("New CONNECT Data inserted successfully");
+
+
+              res.redirect("home");
+              con1.end();
+              con.end();
+            }
+          })
+        })
+      }
+    })
+  })
+});
+
+router.delete('/disconnect-switch', function (req, res, next) {
+  console.log(req.body);
+  var con = mysql.createConnection(database);
+  con.connect(function (err) {
+    if (err) throw err;
+    console.log(req.query);
+    console.log(database);
+    var sql = "DELETE FROM CONNECT WHERE device_ID='"+ req.body.device_ID + "';";
+    var info = {
+      "data": []
+    };
+    con.query(sql, function (err, result) {
+      if (err) {
+        
+        throw err;
+      }
+      else {
+        console.log(result);
+        info.data = result;
+        res.send("success");
+        con.end();
+      }
+    });
+  });
+
+});
+
 
 
 
