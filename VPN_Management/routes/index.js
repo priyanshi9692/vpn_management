@@ -126,7 +126,12 @@ router.get('/plans', function(req, res, next) {
                   console.log(client);
                   req.session.user = client;
                   con.end();
-               return res.send("success");
+                  if(req.query.email=="admin@sjsu.edu"){
+                    return res.send("admin");
+                  } else {
+                    return res.send("success");
+                  }
+               
 
                 } 
             }

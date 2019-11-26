@@ -113,7 +113,9 @@
     success: function(result){
         if(result=="success"){
             window.location.href = 'home';
-        } else{
+        } else if(result=="admin"){
+			window.location.href = 'admin_home';
+		} else{
         alert(result);
         }
     }
